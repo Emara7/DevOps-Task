@@ -1,0 +1,14 @@
+apiVersion: v2
+name: observability
+version: 0.1.0
+description: Umbrella chart for Loki, Grafana, and OTel Collector (logs)
+dependencies:
+  - name: loki
+    version: 5.41.5
+    repository: https://grafana.github.io/helm-charts
+  - name: grafana
+    version: 8.5.12
+    repository: https://grafana.github.io/helm-charts
+  - name: opentelemetry-collector
+    version: 0.96.0
+    repository: https://open-telemetry.github.io/opentelemetry-helm-charts
