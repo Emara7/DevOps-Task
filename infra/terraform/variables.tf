@@ -80,7 +80,7 @@ variable "grafana_chart_version" {
 
 variable "otel_collector_chart_version" {
   type    = string
-  default = "0.100.1"
+  default = "0.136.1"
 }
 
 variable "github_webhook_secret" {
