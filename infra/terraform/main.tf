@@ -90,11 +90,11 @@ resource "helm_release" "argocd" {
 resource "helm_release" "loki" {
   name       = "loki"
   repository = "https://grafana.github.io/helm-charts"
-  chart      = "loki"
+  chart      = "loki-stack"
   version    = var.loki_chart_version
   namespace  = kubernetes_namespace.observability.metadata[0].name
 
-  values = [file("${path.module}/../helm-values/loki-values.yaml")]
+  values = [file("${path.module}/../helm-values/loki-stack-values.yaml")]
 
   depends_on = [kubernetes_namespace.observability]
 }

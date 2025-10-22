@@ -1,0 +1,27 @@
+loki:
+  enabled: true
+  isDefault: true
+  auth_enabled: false
+  persistence:
+    enabled: true
+    size: 5Gi
+  service:
+    type: ClusterIP
+
+promtail:
+  enabled: true
+  config:
+    snippets:
+      pipelineStages:
+        - cri: {}
+    clients:
+      - url: http://loki:3100/loki/api/v1/push
+
+fluent-bit:
+  enabled: false
+
+grafana:
+  enabled: false
+
+prometheus:
+  enabled: false

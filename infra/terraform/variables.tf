@@ -70,7 +70,7 @@ variable "argocd_apps_chart_version" {
 
 variable "loki_chart_version" {
   type        = string
-  default     = "6.6.4"
+  default     = "2.10.2"
 }
 
 variable "grafana_chart_version" {
