@@ -36,7 +36,7 @@ This repository contains the infrastructure layer for a local Kubernetes stack r
 3. **Access ArgoCD:**
    - URL: http://$(minikube ip):30080
    - Username: admin
-   - Password: (from step 2)
+   - Password: ##############
 
 ### GitHub Integration
 
@@ -110,21 +110,4 @@ To enable full GitHub Actions functionality, add these secrets to your repositor
 - **Kubernetes**: Pod and service status
 - **GitHub Actions**: CI/CD pipeline status
 
-## 🚀 Next Steps
 
-1. **Add more applications** to `argocd/apps/`
-2. **Configure monitoring** with Loki, Grafana, OpenTelemetry
-3. **Set up production** deployment targets
-4. **Add security scanning** to CI/CD pipeline
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Push to GitHub
-5. Create a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License.
