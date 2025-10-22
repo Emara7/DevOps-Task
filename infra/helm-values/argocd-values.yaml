@@ -1,0 +1,23 @@
+server:
+  service:
+    type: NodePort
+    nodePortHttp: 30080
+    nodePortHttps: 30443
+  extraArgs:
+    - --insecure
+  ingress:
+    enabled: false
+  config:
+    # Allow anonymous access for demo; in real env use SSO/OIDC
+    url: "http://localhost:30080"
+  # Enable webhook endpoint
+  additionalApplications: []
+
+configs:
+  cm:
+    accounts.admin: apiKey
+    application.resourceTrackingMethod: annotation
+  secret:
+    createSecret: true
+    argocdServerAdminPassword: ""
+    extra: {}
