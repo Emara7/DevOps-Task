@@ -1,0 +1,39 @@
+name: GitOps Sync
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'argocd/apps/**'
+      - 'infra/terraform/**'
+
+jobs:
+  sync-argocd:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.29.0'
+    
+    - name: Setup ArgoCD CLI
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+    
+    - name: Sync ArgoCD Applications
+      run: |
+        # Get ArgoCD server URL (assuming it's accessible)
+        ARGOCD_SERVER="argocd-server.argocd.svc.cluster.local"
+        
+        # Login to ArgoCD (you'll need to set up proper authentication)
+        # argocd login $ARGOCD_SERVER --username admin --password ${{ secrets.ARGOCD_PASSWORD }}
+        
+        # Sync applications
+        # argocd app sync nginx-simple
+        # argocd app sync root
+        
+        echo "ArgoCD sync would happen here with proper authentication"

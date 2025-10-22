@@ -1,0 +1,81 @@
+name: Deploy to Minikube
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Minikube
+      uses: medyagh/gopogh@v0.0.0
+      with:
+        name: minikube
+        driver: docker
+        memory: 4096
+        cpus: 3
+    
+    - name: Start Minikube
+      run: |
+        minikube start --driver=docker --cpus=3 --memory=4096
+        minikube addons enable metrics-server
+        minikube addons enable ingress
+    
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.29.0'
+    
+    - name: Deploy Infrastructure
+      run: |
+        # Deploy nginx application
+        kubectl apply -f nginx-simple.yaml
+        
+        # Wait for pods to be ready
+        kubectl wait --for=condition=ready pod -l app=nginx -n apps --timeout=300s
+    
+    - name: Deploy ArgoCD Application
+      run: |
+        # Apply ArgoCD application
+        kubectl apply -f nginx-argocd-simple.yaml
+        
+        # Wait for application to be created
+        kubectl wait --for=condition=ready application/nginx-simple -n argocd --timeout=300s
+    
+    - name: Verify Deployment
+      run: |
+        echo "=== Cluster Status ==="
+        kubectl get nodes
+        echo ""
+        echo "=== Pods in apps namespace ==="
+        kubectl get pods -n apps
+        echo ""
+        echo "=== ArgoCD Applications ==="
+        kubectl get applications -n argocd
+        echo ""
+        echo "=== Services ==="
+        kubectl get svc -n apps
+    
+    - name: Test Application
+      run: |
+        # Get Minikube IP
+        MINIKUBE_IP=$(minikube ip)
+        echo "Minikube IP: $MINIKUBE_IP"
+        
+        # Test nginx application
+        curl -f http://$MINIKUBE_IP:30081 || echo "Nginx not accessible yet"
+    
+    - name: Get ArgoCD Password
+      run: |
+        echo "=== ArgoCD Access Information ==="
+        echo "URL: http://$(minikube ip):30080"
+        echo "Username: admin"
+        echo "Password: $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)"
+        echo ""
+        echo "=== Nginx Application ==="
+        echo "URL: http://$(minikube ip):30081"

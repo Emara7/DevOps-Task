@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.9.0
+    
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive
+    
+    - name: Terraform Init
+      run: terraform init -chdir=infra/terraform
+    
+    - name: Terraform Validate
+      run: terraform validate -chdir=infra/terraform
+    
+    - name: Terraform Plan
+      run: terraform plan -chdir=infra/terraform
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.29.0'
+    
+    - name: Setup Minikube
+      uses: medyagh/gopogh@v0.0.0
+      with:
+        name: minikube
+        driver: docker
+        memory: 4096
+        cpus: 3
+    
+    - name: Deploy to Minikube
+      run: |
+        minikube start --driver=docker --cpus=3 --memory=4096
+        kubectl apply -f nginx-simple.yaml
+        kubectl apply -f nginx-argocd-simple.yaml
+    
+    - name: Verify Deployment
+      run: |
+        kubectl get pods -n apps
+        kubectl get applications -n argocd
