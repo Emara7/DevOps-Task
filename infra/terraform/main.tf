@@ -21,7 +21,7 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path = var.kubeconfig
+  config_path    = var.kubeconfig
   config_context = var.kube_context
 }
 
@@ -42,11 +42,11 @@ resource "null_resource" "minikube" {
   provisioner "local-exec" {
     command = "bash ${path.module}/../scripts/setup_minikube.sh"
     environment = {
-      PROFILE    = var.minikube_profile
+      PROFILE     = var.minikube_profile
       K8S_VERSION = var.kubernetes_version
-      DRIVER     = var.minikube_driver
-      CPUS       = var.minikube_cpus
-      MEMORY_MB  = var.minikube_memory
+      DRIVER      = var.minikube_driver
+      CPUS        = var.minikube_cpus
+      MEMORY_MB   = var.minikube_memory
     }
   }
 }

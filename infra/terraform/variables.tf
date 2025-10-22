@@ -59,28 +59,28 @@ variable "apps_namespace" {
 }
 
 variable "argocd_chart_version" {
-  type        = string
-  default     = "6.7.18"
+  type    = string
+  default = "6.7.18"
 }
 
 variable "argocd_apps_chart_version" {
-  type        = string
-  default     = "1.6.2"
+  type    = string
+  default = "1.6.2"
 }
 
 variable "loki_chart_version" {
-  type        = string
-  default     = "2.10.2"
+  type    = string
+  default = "2.10.2"
 }
 
 variable "grafana_chart_version" {
-  type        = string
-  default     = "8.4.2"
+  type    = string
+  default = "8.4.2"
 }
 
 variable "otel_collector_chart_version" {
-  type        = string
-  default     = "0.100.1"
+  type    = string
+  default = "0.100.1"
 }
 
 variable "github_webhook_secret" {
