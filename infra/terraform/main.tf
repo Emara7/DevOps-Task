@@ -25,7 +25,13 @@ provider "kubernetes" {
   config_context = var.kube_context
 }
 
-provider "helm" {}
+provider "helm" {
+  # Ensure Helm talks to the same kubeconfig/context as the Kubernetes provider
+  kubernetes {
+    config_path    = var.kubeconfig
+    config_context = var.kube_context
+  }
+}
 
 # Ensure Minikube is up using a local-exec calling our script when requested
 resource "null_resource" "minikube" {
@@ -75,7 +81,8 @@ resource "helm_release" "argocd" {
   # Wire GitHub webhook secret into argocd-secret so /api/webhook validates signatures
   set_sensitive = [
     {
-      name  = "configs.secret.extra.webhook.github.secret"
+      # Escape dots so the key in the secret is literally "webhook.github.secret"
+      name  = "configs.secret.extra.webhook\\.github\\.secret"
       value = var.github_webhook_secret
     }
   ]
