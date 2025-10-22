@@ -73,10 +73,12 @@ resource "helm_release" "argocd" {
   values = [file("${path.module}/../helm-values/argocd-values.yaml")]
 
   # Wire GitHub webhook secret into argocd-secret so /api/webhook validates signatures
-  set_sensitive {
-    name  = "configs.secret.extra.webhook.github.secret"
-    value = var.github_webhook_secret
-  }
+  set_sensitive = [
+    {
+      name  = "configs.secret.extra.webhook.github.secret"
+      value = var.github_webhook_secret
+    }
+  ]
 
   depends_on = [kubernetes_namespace.argocd]
 }
