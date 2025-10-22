@@ -1,0 +1,40 @@
+name: app
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'charts/**'
+      - '.github/workflows/app.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  notify-argocd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Send webhook to ArgoCD
+        env:
+          ARGOCD_WEBHOOK_SECRET: ${{ secrets.ARGOCD_WEBHOOK_SECRET }}
+          ARGOCD_WEBHOOK_URL: ${{ secrets.ARGOCD_WEBHOOK_URL }}
+        run: |
+          if [ -z "${ARGOCD_WEBHOOK_URL}" ]; then
+            echo "ARGOCD_WEBHOOK_URL secret not set; skipping notification"
+            exit 0
+          fi
+          echo "Triggering ArgoCD GitHub webhook"
+          payload=$(jq -n \
+            --arg ref "${{ github.ref }}" \
+            --arg full_name "${{ github.repository }}" \
+            --arg clone_url "${{ github.server_url }}/${{ github.repository }}.git" \
+            '{ref:$ref, repository:{full_name:$full_name, clone_url:$clone_url}}')
+          sig=$(printf '%s' "$payload" | openssl dgst -sha1 -hmac "${ARGOCD_WEBHOOK_SECRET}" | awk '{print $2}')
+          curl -sSL -X POST \
+            -H "X-GitHub-Event: push" \
+            -H "X-Hub-Signature: sha1=${sig}" \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$ARGOCD_WEBHOOK_URL"
