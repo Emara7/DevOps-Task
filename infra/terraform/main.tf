@@ -26,8 +26,8 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  # Ensure Helm talks to the same kubeconfig/context as the Kubernetes provider
-  kubernetes {
+  # Helm provider v3 syntax expects an argument map for kubernetes
+  kubernetes = {
     config_path    = var.kubeconfig
     config_context = var.kube_context
   }
