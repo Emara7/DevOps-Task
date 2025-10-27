@@ -27,4 +27,4 @@ logs/
 *.temp
 
 # Local development
-terraform
+# terraform    # (Commented or removed to avoid ignoring any directory or file named 'terraform')
